@@ -2,12 +2,12 @@ const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const showScore = document.querySelector('.score');
 
-const sizeBall = 10, sliderHeight = 10, sliderWidth = 75
+const sizeBall = 10, sliderHeight = 10, sliderWidth = 100
 nbCol = 8, nbRow = 5, brickWidth = 75, brickHeight = 20, brickPadding = 10, brickOffsetTop = 30, brickOffsetLeft = 30;
 
 let x = canvas.width / 2, y = canvas.height - 30;
 sliderX = (canvas.width - sliderWidth) / 2, end = false,
-speedX = 5, speedY = -5;
+speedX = 5, speedY = -5, score = 0;
 
 function drawBall() {
   ctx.beginPath();
@@ -71,8 +71,8 @@ function draw() {
         drawBall();
         drawSlider();
         drawBricks();
-        // collision();
-        // move();
+        collision();
+
 
         if(x + speedX > canvas.width - sizeBall || x + speedX < sizeBall) {
             speedX = -speedX;
@@ -101,6 +101,44 @@ function draw() {
 }
 
 draw();
+
+function collision() {
+
+    for(let i = 0; i < nbRow; i++) {
+        for(let j = 0; j < nbCol; j++) {
+
+            let b = bricks[i][j];
+
+            if(b.status === 1) {
+                if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    speedY = -speedY;
+                    b.status = 0;
+
+                    score++;
+                    showScore.innerHTML = `Score : ${score}`;
+
+                    if(score == nbCol * nbRow) {
+
+                        showScore.innerHTML = 'You Win ! <br> click to restart';
+                        end = true;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// move Slider
+
+document.addEventListener('mousemove', mouseMove);
+
+function mouseMove(e) {
+    let posXsliderCanvas = e.clientX - canvas.offsetLeft;
+
+    if(posXsliderCanvas > 35 && posXsliderCanvas < canvas.width - 35) {
+        sliderX = posXsliderCanvas - sliderWidth / 2;
+    }
+}
 
 // restart game
 

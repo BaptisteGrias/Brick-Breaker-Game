@@ -1,11 +1,13 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+const showScore = document.querySelector('.score');
 
 const sizeBall = 10, sliderHeight = 10, sliderWidth = 75
 nbCol = 8, nbRow = 5, brickWidth = 75, brickHeight = 20, brickPadding = 10, brickOffsetTop = 30, brickOffsetLeft = 30;
 
 let x = canvas.width / 2, y = canvas.height - 30;
-sliderX = (canvas.width - sliderWidth) / 2;
+sliderX = (canvas.width - sliderWidth) / 2, end = false,
+speedX = 5, speedY = -5;
 
 function drawBall() {
   ctx.beginPath();
@@ -15,7 +17,7 @@ function drawBall() {
   ctx.closePath();
 }
 
-drawBall();
+
 
 function drawSlider() {
   ctx.beginPath();
@@ -25,7 +27,7 @@ function drawSlider() {
   ctx.closePath();
 }
 
-drawSlider();
+
 
 // array with the bricks
 
@@ -61,4 +63,50 @@ function drawBricks() {
         }
     }
 }
-drawBricks();
+
+
+function draw() {
+    if(end === false){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawSlider();
+        drawBricks();
+        // collision();
+        // move();
+
+        if(x + speedX > canvas.width - sizeBall || x + speedX < sizeBall) {
+            speedX = -speedX;
+        }
+
+        if(y + speedY < sizeBall) {
+            speedY = -speedY;
+        }
+
+        if(y + speedY > canvas.height - sizeBall) {
+            if(x > sliderX && x < sliderX + sliderWidth) {
+                speedX = speedX + 0.1;
+                speedY = speedY + 0.1;
+                speedY = -speedY;
+            } else {
+                end = true;
+                showScore.innerHTML = 'Game Over ! <br> click to restart';
+            }
+        }
+
+
+        x += speedX;
+        y += speedY;
+        requestAnimationFrame(draw);
+    }
+}
+
+draw();
+
+// restart game
+
+canvas.addEventListener('click', () => {
+    if(end === true) {
+        end = false;
+        document.location.reload();
+    }
+})
